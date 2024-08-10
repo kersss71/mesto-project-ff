@@ -12,7 +12,6 @@ function createCard (item, deleteCard) {
 
     deleteButton.addEventListener('click', deleteCard);
     
-    cardPlace.append(cardElement);    
     return cardElement;
 }
 
@@ -24,4 +23,5 @@ function deleteCard(evt) {
 // @todo: Вывести карточки на страницу
 initialCards.forEach((item) => {
     const itemCard = createCard(item, deleteCard);
+    cardPlace.append(itemCard);    
 })
