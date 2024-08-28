@@ -1,6 +1,10 @@
-import { templateCard, cardPlace} from "../index";
-import { openPopupWithImage, closePopup, openPopup} from "../components/modal"
+import { cardPlace, openPopupWithImage } from "../index";
+import { closePopup } from "../components/modal"
 import { initialCards } from "../cards";
+
+// Темплейт карт
+
+const templateCard = document.querySelector('#card-template').content;
 
 // @todo: Функция создания карточки
 
@@ -41,20 +45,3 @@ export function likeCard(evt) {
 
 export const formElementCard = document.forms.newplace
 
-export function handleNewCard(evt) {
-    const cardName = formElementCard.placename
-    const cardLink = formElementCard.link
-    evt.preventDefault();
-    const cardNameValue = cardName.value
-    const cardLinkValue = cardLink.value
-    const newCard = {
-        name: cardNameValue,
-        link: cardLinkValue,
-    }
-    const card = createCard(newCard, deleteCard, likeCard, openPopupWithImage)
-    cardPlace.prepend(card);
-    initialCards.push(newCard)
-    console.log(initialCards)
-    closePopup(document.querySelector('.popup_type_new-card'))
-    formElementCard.reset()
-}

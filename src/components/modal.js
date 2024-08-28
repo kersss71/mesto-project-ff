@@ -22,18 +22,5 @@ function closePopupEsc(evt) {
 
 function closePopupOverlay (evt) {
     if (evt.currentTarget === evt.target) {
-        const popupOpen = document.querySelector('.popup.popup_is-opened')
-        closePopup(popupOpen)
+        closePopup(evt.target)
   }}
-
-export function openPopupWithImage(imageSrc, captionText) {
-    const popup = document.querySelector('.popup_type_image');
-    const popupImage = popup.querySelector('.popup__image');
-    const popupCaption = popup.querySelector('.popup__caption');
-
-    popupImage.src = imageSrc;
-    popupImage.alt = captionText;
-    popupCaption.textContent = captionText;
-
-    openPopup(popup);
-}
