@@ -1,10 +1,10 @@
-import { cardPlace, openPopupWithImage } from "../index";
-import { closePopup } from "../components/modal"
-import { initialCards } from "../cards";
 
 // Темплейт карт
 
 const templateCard = document.querySelector('#card-template').content;
+
+export const newCardForm = document.forms.newplace
+
 
 // @todo: Функция создания карточки
 
@@ -12,14 +12,13 @@ export function createCard (item, deleteCard, likeCard, openPopupWithImage) {
     const cardElement = templateCard.querySelector('.places__item').cloneNode(true);
     const deleteButton = cardElement.querySelector('.card__delete-button');
     const likeButton = cardElement.querySelector('.card__like-button')
-    cardElement.querySelector('.card__image').src = item.link;
-    cardElement.querySelector('.card__image').alt = item.name;
-    cardElement.querySelector('.card__title').textContent = item.name;
-
-    cardElement.querySelector('.card__image').addEventListener('click', () => openPopupWithImage(item.link, item.name));
-
+    const cardImage = cardElement.querySelector('.card__image')
+    const cardTitle = cardElement.querySelector('.card__title')
+    cardImage.src = item.link;
+    cardImage.alt = item.name;
+    cardTitle.textContent = item.name;
+    cardImage.addEventListener('click', () => openPopupWithImage(item.link, item.name));
     deleteButton.addEventListener('click', deleteCard); 
-
     likeButton.addEventListener('click', likeCard)
 
     return cardElement;
@@ -41,7 +40,4 @@ export function likeCard(evt) {
     }
 }
 
-// функция создания новой карточки через попап пользователем
-
-export const formElementCard = document.forms.newplace
 
