@@ -1,9 +1,7 @@
 import "../pages/index.css"; 
-import "../src/components/validation"
-import "../src/components/api"
 import { createCard, deleteCard, likeCard, newCardForm } from "../src/components/card"
 import { openPopup, closePopup, } from "../src/components/modal"
-import { clearValidation, enableValidation, validationConfig} from "../src/components/validation"
+import { clearValidation, enableValidation} from "../src/components/validation"
 import * as api from "../src/components/api"
 // @todo: DOM узлы
 const cardPlace = document.querySelector('.places__list')
@@ -27,7 +25,14 @@ const cardLink = newCardForm.link
 const profileConfig = {}
 const avatarPopup = document.querySelector('.popup_type_avatar')
 const avatarEditButton = avatarPopup.querySelector('.popup__button')
-
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+  }
 
 // promises all
 
@@ -51,7 +56,7 @@ function renderProfile (profileInfo) {
 
 function renderInitialCards (cardData) {
     Array.from(cardData).forEach((el) => {
-        const card = createCard(el, deleteCardMain, openPopupWithImage, profileConfig.id)
+        const card = createCard(el, deleteCardMain, likeCardMain, openPopupWithImage, profileConfig.id)
         cardPlace.append(card)
     })
 }
@@ -62,12 +67,14 @@ function handleProfileFormSubmit(evt) {
     const jobInputValue = jobInput.value
     const nameInputValue = nameInput.value
     const button = document.querySelector('.popup__button')
-    profileTitle.textContent = nameInputValue
-    profileDescription.textContent = jobInputValue
     button.textContent = 'Сохранение...'
     evt.preventDefault()
     api.updateProfileInfo(nameInputValue, jobInputValue)
-    .then(() => closePopup(editPopup))
+    .then((res) => {
+        profileTitle.textContent = res.name
+        profileDescription.textContent = res.about  
+        closePopup(editPopup)
+    })
     .catch((err) => console.log(err))
     .finally(() => button.textContent = 'Сохранить')
 }
@@ -101,10 +108,11 @@ function handleNewCard(evt) {
     evt.preventDefault()
     api.newCardRequest(newCard)
     .then((res) => {
-        const card = createCard(res, deleteCardMain, openPopupWithImage, profileConfig.id)
+        const card = createCard(res, deleteCardMain, likeCardMain, openPopupWithImage, profileConfig.id)
         cardPlace.prepend(card);
         closePopup(newCardPopup)
         newCardForm.reset()
+        clearValidation(document.forms.avatar, validationConfig)
     })
     .catch((err) => console.log(err))
     .finally(() => button.textContent = 'Сохранить')  
@@ -121,23 +129,14 @@ export function deleteCardMain (evt, cardData) {
 }
 
 export function likeCardMain(evt, cardData, userId, likeCounter) {
-	if (cardData.likes.some(like => like._id === userId)) {
-		api.deleteLikeRequest(cardData._id)
-			.then((res) => {
-                cardData.likes = res.likes
-                likeCounter.textContent = res.likes.length;
-                likeCard(evt)
-            })
-			.catch((err) => console.log(err));
-	} else {
-		api.addLikeRequest(cardData._id)
-			.then((res) => {
-                cardData.likes = res.likes
-                likeCounter.textContent = res.likes.length;
-                likeCard(evt)
-            })
-			.catch((err) => console.log(err));
-	}
+    const likePromise = cardData.likes.some(like => like._id === userId) ? api.deleteLikeRequest(cardData._id) : api.addLikeRequest(cardData._id)
+	likePromise
+    .then((res) => { 
+        cardData.likes = res.likes 
+        likeCounter.textContent = res.likes.length;
+        likeCard(evt) 
+})
+    .catch((err) => console.log(err))
 }
 
 function updateAvatar (evt) {
@@ -146,8 +145,8 @@ function updateAvatar (evt) {
     const button = document.forms.avatar.button
     button.textContent = 'Сохранение...'
     api.updateAvatarRequest(link)
-    .then(() => {
-        profileImage.setAttribute('style', `background-image: url(${link})`)
+    .then((res) => {
+        profileImage.setAttribute('style', `background-image: url(${res.avatar})`)
         closePopup(avatarPopup)
         document.forms.avatar.reset()
         clearValidation(document.forms.avatar, validationConfig)
@@ -190,5 +189,6 @@ closeButtons.forEach((button) => {
 
 
 enableValidation(validationConfig)
+
 
 

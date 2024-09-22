@@ -1,12 +1,3 @@
-export const validationConfig = {
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__error_visible'
-  }
-
 const showInputError = (formElement, inputElement, config) => {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
     inputElement.classList.add(config.inputErrorClass)
@@ -44,11 +35,9 @@ function hasInvalidInput(inputList) {
 
 function toggleButtonState(inputList, buttonElement, config) {
     if (hasInvalidInput(inputList)) {
-      buttonElement.classList.add(config.inactiveButtonClass)
-      buttonElement.disabled = true
+      disableSubmitButton(buttonElement, config)
     } else {
-      buttonElement.classList.remove(config.inactiveButtonClass)
-      buttonElement.disabled = false
+      enableSubmitButton(buttonElement, config)
     }
   }
 
@@ -79,11 +68,17 @@ export const clearValidation = (formElement, config) => {
     const inputList = Array.from(formElement.querySelectorAll(config.inputSelector))
     const submitButton = formElement.querySelector(config.submitButtonSelector)
     inputList.forEach((inputElement) => {
-      const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
-      errorElement.textContent = ''
-      errorElement.classList.remove(config.errorClass)
-      inputElement.classList.remove(config.inputErrorClass)
+      hideInputError(formElement, inputElement, config)
     })
-    submitButton.classList.add(config.inactiveButtonClass)
-    submitButton.disabled = true
+    disableSubmitButton(submitButton, config)
   }
+
+const disableSubmitButton = (button, config) => {
+  button.classList.add(config.inactiveButtonClass)
+  button.disabled = true
+}
+
+const enableSubmitButton = (button, config) => {
+  button.classList.remove(config.inactiveButtonClass)
+  button.disabled = false
+}

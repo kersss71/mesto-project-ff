@@ -1,4 +1,3 @@
-import { likeCardMain } from "../index";
 // Темплейт карт
 const templateCard = document.querySelector('#card-template').content;
 
@@ -6,7 +5,7 @@ export const newCardForm = document.forms.newplace
 
 // @todo: Функция создания карточки
 
-export function createCard (item, deleteCardMain, openPopupWithImage, userId) {
+export function createCard (item, deleteCardMain, likeCardMain, openPopupWithImage, userId) {
     const cardElement = templateCard.querySelector('.places__item').cloneNode(true)
     const deleteButton = cardElement.querySelector('.card__delete-button')
     const likeButton = cardElement.querySelector('.card__like-button')
@@ -20,6 +19,8 @@ export function createCard (item, deleteCardMain, openPopupWithImage, userId) {
 
     if (item.owner._id !== userId) {
         deleteButton.remove()
+    } else {
+        deleteButton.addEventListener('click', (evt) => deleteCardMain(evt, item))
     }
 
     if (item.likes.some(like => like._id === userId)) {
@@ -27,7 +28,6 @@ export function createCard (item, deleteCardMain, openPopupWithImage, userId) {
     }
 
     cardImage.addEventListener('click', () => openPopupWithImage(item.link, item.name))
-    deleteButton.addEventListener('click', (evt) => deleteCardMain(evt, item))
     likeButton.addEventListener('click', (evt) => likeCardMain(evt, item, userId, likeCounter))
     return cardElement;
 }
